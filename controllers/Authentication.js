@@ -1,11 +1,14 @@
 import User from "../models/User.js";
 import jwt  from "jsonwebtoken";
 import { v1 } from "uuid";
+import { registerSchema } from "../validation/register.js";
+
 const uuidv1 = v1;
 
 export const register = async (req, res) => {  
   try {
-    const {email, password, firstName, lastName} = req.body;
+    await registerSchema.validateAsync(req.body, {abortEarly: false})
+    const { email, password, firstName, lastName} = req.body;
     const findUser = await User.findOne({ email});
     if(findUser){
       res.status(200).json({

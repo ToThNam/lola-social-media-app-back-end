@@ -25,6 +25,16 @@ export const searchUser = async (req, res) => {
   }
 };
 
+export const getUserByID = async (req, res) => {
+  try {
+    const userID = req.body._id;
+    const user = await User.findById(userID);
+    res.status(200).json(user);
+  } catch (err) {
+    res.status(500).json({errror: err});
+  }
+};
+
 export const updateUser = async (req, res) => {  
   try {
     const updateUser = req.body;
