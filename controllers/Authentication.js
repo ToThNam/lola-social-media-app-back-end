@@ -1,25 +1,26 @@
 import User from "../models/User.js";
 import jwt from "jsonwebtoken";
 import { v1 } from "uuid";
-import { registerSchema, autheticationSchema } from "../validation/register.js";
+import { autheticationSchema } from "../validation/authenticationValid.js";
 
 const uuidv1 = v1;
 
 export const register = async (req, res) => {
   try {
-    await registerSchema.validateAsync(req.body, { abortEarly: false });
-    const { email, password, firstName, lastName } = req.body;
+    await autheticationSchema.validateAsync(req.body, { abortEarly: false });
+    const { email, password } = req.body;
     const findUser = await User.findOne({ email });
     if (findUser) {
       res.status(200).json({
-        message: `Email ${email} already available!`,
+        registerMessage: `Email ${email} already available!`,
+        status: "fail",
       });
     } else {
       const user = new User({
         email,
         password,
-        firstName,
-        lastName,
+        firstName: "User",
+        lastName: "Name",
         image: "https://cdn-icons-png.flaticon.com/512/149/149071.png",
       });
       await user.save();
@@ -29,7 +30,8 @@ export const register = async (req, res) => {
       res.status(200).json({
         secretKey,
         token,
-        message: `Email ${email} registesred successfully!`,
+        registerMessage: `Email ${email} registesred successfully!`,
+        status: "success",
       });
     }
   } catch (err) {
@@ -49,16 +51,19 @@ export const signIn = async (req, res) => {
         res.status(200).json({
           secretKey,
           token,
-          message: "Sign In successfully!",
+          signInMessage: "Sign In successfully!",
+          status: "success",
         });
       } else {
         res.status(200).json({
-          message: "Invalid Password, Please try again",
+          signInMessage: "Invalid Password, Please try again",
+          status: "fail",
         });
       }
     } else {
       res.status(200).json({
-        message: `Email ${email} not available!`,
+        signInMessage: `Email ${email} not available!`,
+        status: "fail",
       });
     }
   } catch (err) {
